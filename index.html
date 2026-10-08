@@ -37,7 +37,7 @@
                 <h3 class="text-sm font-bold text-gray-700 text-center mb-2">দোকানদার লগইন প্যানেল</h3>
                 <div>
                     <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">দোকানের মোবাইল নম্বর (১১ ডিজিট)</label>
-                    <input type="tel" id="login-phone" maxlength="11" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="017xxxxxxxx" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="tel" id="login-phone" maxlength="11" autocomplete="off" placeholder="017xxxxxxxx" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">পাসওয়ার্ড</label>
@@ -116,11 +116,11 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">মোবাইল নম্বর (১১ ডিজিট)</label>
-                    <input type="tel" id="due-phone" maxlength="11" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="017xxxxxxxx" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2">
+                    <input type="tel" id="due-phone" maxlength="11" autocomplete="off" placeholder="017xxxxxxxx" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">টাকার পরিমাণ</label>
-                    <input type="number" id="due-amount" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="৫০০" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2">
+                    <input type="number" id="due-amount" autocomplete="off" placeholder="৫০০" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">তারিখ</label>
@@ -143,7 +143,7 @@
 
                 <div id="selected-customer-box" class="hidden bg-blue-50 p-3 rounded-xl border border-blue-200 space-y-2">
                     <p class="text-xs font-bold text-blue-800" id="sel-cust-info">গ্রাহক: </p>
-                    <input type="number" id="paid-amount" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="কত টাকা পরিশোধ করছে?" class="w-full px-3 py-2 border rounded-lg text-sm bg-white outline-none">
+                    <input type="number" id="paid-amount" autocomplete="off" placeholder="কত টাকা পরিশোধ করছে?" class="w-full px-3 py-2 border rounded-lg text-sm bg-white outline-none">
                     <input type="date" id="paid-date" class="w-full px-3 py-2 border rounded-lg text-sm bg-white outline-none">
                 </div>
 
@@ -158,4 +158,35 @@
         <div id="modal-voucher" class="hidden absolute inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
             <div class="bg-white w-full rounded-2xl p-6 shadow-2xl space-y-4">
                 <div id="printable-voucher" class="bg-gray-50 p-4 rounded-xl border space-y-3">
-                    <div class="text-center
+                    <div class="text-center border-b pb-3">
+                        <h2 id="v-shop-name" class="font-extrabold text-lg text-blue-600">দোকানের নাম</h2>
+                        <p class="text-xs text-gray-500">ডিজিটাল ক্যাশমেমো / ভাউচার</p>
+                    </div>
+                    <div class="text-xs space-y-1.5 text-gray-700">
+                        <p><strong>ভাউচার নং:</strong> <span id="v-id"></span></p>
+                        <p><strong>তারিখ:</strong> <span id="v-date"></span></p>
+                        <p><strong>গ্রাহকের নাম:</strong> <span id="v-cust-name"></span></p>
+                        <p><strong>মোবাইল:</strong> <span id="v-cust-phone"></span></p>
+                        <p><strong>লেনদেনের ধরণ:</strong> <span id="v-type" class="font-bold"></span></p>
+                    </div>
+                    <div class="border-t pt-2 flex justify-between items-center font-bold text-sm">
+                        <span>পরিমাণ:</span>
+                        <span id="v-amount" class="text-lg"></span>
+                    </div>
+                    <div class="text-center pt-3 border-t text-[10px] text-gray-400">
+                        Powered by Digital Hisab • Sohel Digital Agency
+                    </div>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button onclick="closeVoucherModal()" class="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-xl font-bold text-sm">বন্ধ করুন</button>
+                    <button onclick="window.print()" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-bold text-sm">প্রিন্ট / সেভ</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
