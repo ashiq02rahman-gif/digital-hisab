@@ -1,15 +1,22 @@
-// MASTER SERVER CONTROL (আপনার কন্ট্রোল: false করলে পুরো অ্যাপ লক হয়ে যাবে)
-const SERVER_ACTIVE = true; 
-
-if (!SERVER_ACTIVE) {
-    document.getElementById('server-offline-screen').classList.remove('hidden');
-}
+// ==========================================
+// কাস্টম ইউজার ব্লক বা সাসপেন্ড লিস্ট (এখানে ব্লক করা দোকানদারের মোবাইল নম্বরগুলো বসাবেন)
+// ==========================================
+const BLOCKED_NUMBERS = [
+    "01800000000" // উদাহরণ: এই নম্বরের দোকানদারের বিল বাকি থাকলে অ্যাপ কাজ করবে না
+];
 
 // Auto Load saved credentials on startup
 window.onload = function() {
     const savedUser = localStorage.getItem('sohel_digital_hisab_user');
     if (savedUser) {
         const user = JSON.parse(savedUser);
+        
+        // চেক করা হচ্ছে ইউজার ব্লক লিস্টে আছে কিনা
+        if (BLOCKED_NUMBERS.includes(user.phone)) {
+            document.getElementById('server-offline-screen').classList.remove('hidden');
+            return;
+        }
+
         document.getElementById('phone-input').value = user.phone;
         document.getElementById('password-input').value = user.password;
         document.getElementById('shop-name-input').value = user.shopName;
@@ -25,6 +32,12 @@ function handleAuth(isAuto = false) {
 
     if(!phone || !password || (!shopName && !isAuto)) {
         if(!isAuto) alert('দয়া করে দোকান নাম, নম্বর ও পাসওয়ার্ড দিন!');
+        return;
+    }
+
+    // লগইন করার সময়ও চেক করবে নম্বরটি ব্লক লিস্টে আছে কিনা
+    if (BLOCKED_NUMBERS.includes(phone)) {
+        document.getElementById('server-offline-screen').classList.remove('hidden');
         return;
     }
 
