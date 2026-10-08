@@ -12,43 +12,38 @@
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
 
-    <!-- Main Container -->
     <div id="app" class="w-full max-w-md mx-auto bg-white min-h-screen shadow-2xl flex flex-col justify-between relative overflow-hidden">
         
-        <!-- Server Control Check / Kill Switch -->
+        <!-- Server Control / Blocked Screen -->
         <div id="server-offline-screen" class="hidden absolute inset-0 bg-red-600 z-50 flex flex-col items-center justify-center text-white p-6 text-center">
             <h1 class="text-3xl font-bold mb-4">⚠️ Service Suspended</h1>
             <p class="text-lg">আপনার এই অ্যাপটির মাসিক সাবস্ক্রিপশন বা সার্ভার বিল পরিশোধ করা হয়নি। দয়া করে Sohel Digital Agency এর সাথে যোগাযোগ করুন।</p>
             <p class="mt-6 text-sm bg-black bg-opacity-20 px-4 py-2 rounded">Contact: Sohel Digital Agency</p>
         </div>
 
-        <!-- 1. LOGIN / SIGNUP SCREEN -->
+        <!-- 1. LOGIN SCREEN ONLY -->
         <div id="auth-screen" class="p-6 flex-1 flex flex-col justify-center">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Digital Hisab</h1>
                 <p class="text-sm text-gray-500 mt-1 font-medium">by Sohel Digital Agency</p>
             </div>
 
-            <div class="space-y-4">
+            <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
+                <h3 class="text-sm font-bold text-gray-700 text-center mb-2">দোকানদার লগইন প্যানেল</h3>
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">দোকানের নাম (Shop Name)</label>
-                    <input type="text" id="shop-name-input" placeholder="যেমন: ভাই ভাই স্টোর" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">মোবাইল নম্বর (User ID)</label>
-                    <input type="text" id="phone-input" placeholder="017xxxxxxxx" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">দোকানের মোবাইল নম্বর (১১ ডিজিট)</label>
+                    <input type="tel" id="login-phone" maxlength="11" placeholder="017xxxxxxxx" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">পাসওয়ার্ড</label>
-                    <input type="password" id="password-input" placeholder="••••••••" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="password" id="login-password" placeholder="••••••••" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
-                <button onclick="handleAuth()" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition">লগইন / সাইন আপ</button>
+                <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition">লগইন করুন</button>
             </div>
         </div>
 
         <!-- 2. DASHBOARD SCREEN -->
         <div id="dashboard-screen" class="hidden flex-1 flex flex-col justify-between">
-            <!-- Header -->
             <div class="bg-blue-600 text-white p-5 rounded-b-3xl shadow-md">
                 <div class="flex justify-between items-center">
                     <div>
@@ -69,69 +64,85 @@
                 </div>
             </div>
 
-            <!-- Body / Content -->
+            <!-- Body Content -->
             <div class="p-4 flex-1 overflow-y-auto space-y-4">
-                <!-- Action Buttons -->
                 <div class="flex gap-2">
-                    <button onclick="openModal('due')" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold shadow hover:bg-red-700 transition flex items-center justify-center gap-2">
-                        ➕ নতুন বাকি যোগ করুন
+                    <button onclick="openAddDueModal()" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold shadow hover:bg-red-700 transition flex items-center justify-center gap-1 text-sm">
+                        ➕ নতুন বাকি যোগ
                     </button>
-                    <button onclick="openModal('paid')" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow hover:bg-blue-700 transition flex items-center justify-center gap-2">
-                        💵 বাকি পরিশোধ (Paid)
+                    <button onclick="openPaidModal()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow hover:bg-blue-700 transition flex items-center justify-center gap-1 text-sm">
+                        💵 বাকি পরিশোধ
                     </button>
                 </div>
 
                 <!-- Search Filter -->
-                <div class="relative">
-                    <input type="date" id="search-date" oninput="renderData()" class="w-full px-4 py-2.5 border rounded-xl text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none">
+                <div class="flex gap-2">
+                    <input type="text" id="search-keyword" oninput="renderData()" placeholder="নাম বা নম্বর দিয়ে খুঁজুন..." class="flex-1 px-4 py-2 border rounded-xl text-sm bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="date" id="search-date" oninput="renderData()" class="px-3 py-2 border rounded-xl text-sm bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                <!-- Customer Due List -->
                 <div>
-                    <h3 class="text-xs font-bold uppercase text-gray-400 mb-2">বাকি ও পরিশোধের হিসাব তালিকা</h3>
-                    <div id="transaction-list" class="space-y-3">
-                        <!-- Dynamic Records -->
-                    </div>
+                    <h3 class="text-xs font-bold uppercase text-gray-400 mb-2">হিসাবের তালিকা</h3>
+                    <div id="transaction-list" class="space-y-3"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Footer Branding -->
+        <!-- Footer -->
         <div class="py-3 text-center border-t text-xs text-gray-400 font-medium bg-white">
             Developed by <span class="text-blue-600 font-semibold">Sohel Digital Agency</span>
         </div>
 
-        <!-- ADD TRANSACTION MODAL -->
-        <div id="transaction-modal" class="hidden absolute inset-0 bg-black/50 z-40 flex items-center justify-center p-4">
+        <!-- MODAL: ADD DUE -->
+        <div id="modal-due" class="hidden absolute inset-0 bg-black/50 z-40 flex items-center justify-center p-4">
             <div class="bg-white w-full rounded-2xl p-6 shadow-2xl space-y-4">
-                <h3 id="modal-title" class="text-lg font-bold text-gray-800">নতুন বাকি এন্ট্রি</h3>
-                <input type="hidden" id="modal-type">
+                <h3 class="text-lg font-bold text-gray-800">নতুন বাকি এন্ট্রি</h3>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">গ্রাহকের নাম</label>
-                    <input type="text" id="cust-name" placeholder="গ্রাহকের নাম লিখুন" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="due-name" placeholder="নাম লিখুন" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 mb-1">মোবাইল নম্বর</label>
-                    <input type="text" id="cust-phone" placeholder="017xxxxxxxx" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">মোবাইল নম্বর (১১ ডিজিট)</label>
+                    <input type="tel" id="due-phone" maxlength="11" placeholder="017xxxxxxxx" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 mb-1">টাকার পরিমাণ (Tk)</label>
-                    <input type="number" id="cust-amount" placeholder="৫০০" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">টাকার পরিমাণ</label>
+                    <input type="number" id="due-amount" placeholder="৫০০" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">তারিখ</label>
-                    <input type="date" id="cust-date" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="date" id="due-date" class="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2">
                 </div>
                 <div class="flex gap-2 pt-2">
-                    <button onclick="closeModal()" class="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-xl font-bold">বাতিল</button>
-                    <button onclick="saveTransaction()" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-bold">সংরক্ষণ করুন</button>
+                    <button onclick="closeModals()" class="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-xl font-bold">বাতিল</button>
+                    <button onclick="saveDueTransaction()" class="flex-1 bg-red-600 text-white py-2.5 rounded-xl font-bold">সংরক্ষণ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL: DUE PAID -->
+        <div id="modal-paid" class="hidden absolute inset-0 bg-black/50 z-40 flex items-center justify-center p-4">
+            <div class="bg-white w-full max-h-[85vh] rounded-2xl p-6 shadow-2xl flex flex-col space-y-4">
+                <h3 class="text-lg font-bold text-gray-800">বাকি পরিশোধ (Due Paid)</h3>
+                <input type="text" id="paid-search" oninput="renderDueCustomerList()" placeholder="বাকি থাকা গ্রাহক খুঁজুন..." class="w-full px-4 py-2 border rounded-xl text-sm outline-none">
+                
+                <div id="due-customer-list" class="flex-1 overflow-y-auto space-y-2 max-h-48"></div>
+
+                <div id="selected-customer-box" class="hidden bg-blue-50 p-3 rounded-xl border border-blue-200 space-y-2">
+                    <p class="text-xs font-bold text-blue-800" id="sel-cust-info">গ্রাহক: </p>
+                    <input type="number" id="paid-amount" placeholder="কত টাকা পরিশোধ করছে?" class="w-full px-3 py-2 border rounded-lg text-sm bg-white outline-none">
+                    <input type="date" id="paid-date" class="w-full px-3 py-2 border rounded-lg text-sm bg-white outline-none">
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button onclick="closeModals()" class="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-xl font-bold">বাতিল</button>
+                    <button onclick="savePaidTransaction()" id="btn-confirm-paid" class="hidden flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-bold">পরিশোধ নিশ্চিত করুন</button>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- External JS Link -->
     <script src="app.js"></script>
 </body>
 </html>
