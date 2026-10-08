@@ -1,5 +1,5 @@
 // ==========================================
-// ১. অনুমোদিত দোকানদারদের তালিকা (৫টি স্যাম্পল ইউজার)
+// ১. অনুমোদিত দোকানদারদের তালিকা
 // ==========================================
 const ALLOWED_SHOPS = {
     "01711111111": { shopName: "ভাই ভাই স্টোর", password: "123" },
@@ -10,11 +10,10 @@ const ALLOWED_SHOPS = {
 };
 
 // ==========================================
-// ২. ব্লক করা দোকানদারদের তালিকা (৫টি স্যাম্পল ব্লক নম্বর)
-// এই লিস্টে নম্বর থাকা মানেই অ্যাপ সাথে সাথে ব্লক বা সাসপেন্ড হয়ে যাওয়া।
+// ২. ব্লক করা দোকানদারদের তালিকা (এখানে যে নম্বর দেবেন, সে সাথে সাথে ব্লক হয়ে যাবে)
 // ==========================================
 const BLOCKED_NUMBERS = [
-    "01711111111",
+    "01722222222", // টেস্ট করার জন্য মা ডিজিটাল টেলিকমের নম্বরটি এখানে ব্লক করে দিলাম
     "01800000002",
     "01800000003",
     "01800000004",
@@ -40,20 +39,26 @@ window.onload = function() {
 }
 
 // ==========================================
-// ইনস্ট্যান্ট ব্লক ও অথেন্টিকেশন চেক লজিক
+// ইনস্ট্যান্ট ব্লক চেকিং লজিক
 // ==========================================
 function checkAuthAndBlockStatus() {
     const savedUser = localStorage.getItem('sohel_digital_hisab_user');
+    
     if (savedUser) {
         const user = JSON.parse(savedUser);
         currentLoggedInPhone = user.phone;
         
-        // যদি নম্বরটি ব্লক লিস্টে থাকে অথবা অনুমোদিত তালিকায় না থাকে
-        if (BLOCKED_NUMBERS.includes(user.phone) || !ALLOWED_SHOPS[user.phone]) {
+        // যদি লগইন করা ইউজার ব্লক লিস্টে থাকে, তবে তাকে সাথে সাথে ব্লক স্ক্রিন দেখিয়ে সেশন উড়িয়ে দেব
+        if (BLOCKED_NUMBERS.includes(user.phone)) {
             document.getElementById('server-offline-screen').classList.remove('hidden');
             document.getElementById('dashboard-screen').classList.add('hidden');
             document.getElementById('auth-screen').classList.add('hidden');
-            localStorage.removeItem('sohel_digital_hisab_user'); // সেশন ক্লিয়ার করে দেব
+            localStorage.removeItem('sohel_digital_hisab_user');
+            return;
+        }
+
+        if (!ALLOWED_SHOPS[user.phone]) {
+            logout();
             return;
         }
 
@@ -83,7 +88,7 @@ function handleLogin() {
         return;
     }
 
-    // লগইন করার সময়ও ব্লক লিস্ট চেক করবে
+    // লগইন করার সময় ব্লক লিস্টে থাকলে ডিরেক্ট ব্লক স্ক্রিন দেখাবে
     if (BLOCKED_NUMBERS.includes(phone)) {
         document.getElementById('server-offline-screen').classList.remove('hidden');
         document.getElementById('auth-screen').classList.add('hidden');
