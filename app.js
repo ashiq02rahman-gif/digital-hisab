@@ -1,10 +1,26 @@
-// অনুমোদিত দোকানদারদের তালিকা
+// ==========================================
+// ১. অনুমোদিত দোকানদারদের তালিকা (এখানে ৫টি স্যাম্পল ইউজার-পাস দেওয়া আছে)
+// ==========================================
 const ALLOWED_SHOPS = {
-    "01712345678": { shopName: "ভাই ভাই স্টোর", password: "123" },
-    "01812345678": { shopName: "মা ডিজিটাল টেলিকম", password: "456" }
+    "01711111111": { shopName: "ভাই ভাই স্টোর", password: "123" },
+    "01722222222": { shopName: "মা ডিজিটাল টেলিকম", password: "456" },
+    "01733333333": { shopName: "আল মদিনা ভ্যারাইটিজ", password: "789" },
+    "01744444444": { shopName: "সোহাগ এন্টারপ্রাইজ", password: "321" },
+    "01755555555": { shopName: "বিশ্বাস স্টোর", password: "654" }
 };
 
-const BLOCKED_NUMBERS = [];
+// ==========================================
+// ২. বিল বাকি থাকা বা ব্লক করা দোকানদারদের তালিকা (এখানে ৫টি স্যাম্পল ব্লক নম্বর দেওয়া আছে)
+// বিল পরিশোধ করলে এখান থেকে নম্বর মুছে দেবেন, না দিলে ব্লক থাকবে।
+// ==========================================
+const BLOCKED_NUMBERS = [
+    "01722222222", // স্যাম্পল ব্লক ১
+    "01733333333", // স্যাম্পল ব্লক ২
+    "01800000001", // স্যাম্পল ব্লক ৩
+    "01800000002", // স্যাম্পল ব্লক ৪
+    "01800000003"  // স্যাম্পল ব্লক ৫
+];
+
 let selectedCustomerForPaid = null;
 let currentLoggedInPhone = null;
 
@@ -41,7 +57,6 @@ function checkAuthAndBlockStatus() {
         document.getElementById('auth-screen').classList.add('hidden');
         document.getElementById('dashboard-screen').classList.remove('hidden');
         
-        // Default filter to Today
         document.getElementById('filter-date').value = getTodayDateStr();
         renderData();
     }
@@ -82,11 +97,19 @@ function logout() {
 
 // Modals
 function openAddDueModal() {
+    document.getElementById('due-name').value = '';
+    document.getElementById('due-phone').value = '';
+    document.getElementById('due-amount').value = '';
+    document.getElementById('due-date').value = getTodayDateStr();
+
     document.getElementById('modal-due').classList.remove('hidden');
 }
 
 function openPaidModal() {
     selectedCustomerForPaid = null;
+    document.getElementById('paid-search').value = '';
+    document.getElementById('paid-amount').value = '';
+    document.getElementById('paid-date').value = getTodayDateStr();
     document.getElementById('selected-customer-box').classList.add('hidden');
     document.getElementById('btn-confirm-paid').classList.add('hidden');
     document.getElementById('modal-paid').classList.remove('hidden');
@@ -98,7 +121,6 @@ function closeModals() {
     document.getElementById('modal-paid').classList.add('hidden');
 }
 
-// Get store-specific transactions key
 function getStoreTransKey() {
     return 'sohel_trans_' + currentLoggedInPhone;
 }
@@ -249,7 +271,6 @@ function renderData() {
     let totalPaid = 0;
     listEl.innerHTML = '';
 
-    // Total lifetime calculation for this specific shop
     transactions.forEach(t => {
         if(t.type === 'due') totalDue += t.amount;
         if(t.type === 'paid') totalPaid += t.amount;
@@ -258,7 +279,6 @@ function renderData() {
     document.getElementById('total-due-amount').innerText = '৳ ' + (totalDue - totalPaid);
     document.getElementById('total-paid-amount').innerText = '৳ ' + totalPaid;
 
-    // Filter by date and search keyword
     const filtered = transactions.filter(t => {
         let matchDate = selectedDate ? t.date === selectedDate : true;
         let matchKeyword = keyword ? (t.name.toLowerCase().includes(keyword) || t.phone.includes(keyword)) : true;
