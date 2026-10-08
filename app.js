@@ -1,5 +1,5 @@
 // ==========================================
-// ১. অনুমোদিত দোকানদারদের তালিকা (এখানে ৫টি স্যাম্পল ইউজার-পাস দেওয়া আছে)
+// ১. অনুমোদিত দোকানদারদের তালিকা (৫টি স্যাম্পল ইউজার-পাস)
 // ==========================================
 const ALLOWED_SHOPS = {
     "01711111111": { shopName: "ভাই ভাই স্টোর", password: "123" },
@@ -10,15 +10,14 @@ const ALLOWED_SHOPS = {
 };
 
 // ==========================================
-// ২. বিল বাকি থাকা বা ব্লক করা দোকানদারদের তালিকা (এখানে ৫টি স্যাম্পল ব্লক নম্বর দেওয়া আছে)
-// বিল পরিশোধ করলে এখান থেকে নম্বর মুছে দেবেন, না দিলে ব্লক থাকবে।
+// ২. ব্লক করা বা সাবস্ক্রিপশন শেষ হওয়া দোকানদারদের তালিকা (৫টি স্যাম্পল ব্লক নম্বর)
 // ==========================================
 const BLOCKED_NUMBERS = [
-    "01700000000", // স্যাম্পল ব্লক ১
-    "01733333333", // স্যাম্পল ব্লক ২
-    "01800000001", // স্যাম্পল ব্লক ৩
-    "01800000002", // স্যাম্পল ব্লক ৪
-    "01800000003"  // স্যাম্পল ব্লক ৫
+    "01800000001",
+    "01800000002",
+    "01800000003",
+    "01800000004",
+    "01800000005"
 ];
 
 let selectedCustomerForPaid = null;
@@ -101,6 +100,7 @@ function openAddDueModal() {
     document.getElementById('due-phone').value = '';
     document.getElementById('due-amount').value = '';
     document.getElementById('due-date').value = getTodayDateStr();
+    document.getElementById('customer-suggestions').classList.add('hidden');
 
     document.getElementById('modal-due').classList.remove('hidden');
 }
@@ -119,10 +119,58 @@ function openPaidModal() {
 function closeModals() {
     document.getElementById('modal-due').classList.add('hidden');
     document.getElementById('modal-paid').classList.add('hidden');
+    document.getElementById('customer-suggestions').classList.add('hidden');
 }
 
 function getStoreTransKey() {
     return 'sohel_trans_' + currentLoggedInPhone;
+}
+
+// Auto-suggest Customer name & phone (Unique by Phone Number to handle duplicate names)
+function handleCustomerTypeAhead() {
+    const inputVal = document.getElementById('due-name').value.trim().toLowerCase();
+    const suggestionBox = document.getElementById('customer-suggestions');
+    suggestionBox.innerHTML = '';
+
+    if (!inputVal) {
+        suggestionBox.classList.add('hidden');
+        return;
+    }
+
+    const key = getStoreTransKey();
+    const transactions = JSON.parse(localStorage.getItem(key) || '[]');
+    
+    let uniqueCustomers = {};
+    transactions.forEach(t => {
+        if(t.phone && t.name) {
+            uniqueCustomers[t.phone] = t.name;
+        }
+    });
+
+    let matched = Object.entries(uniqueCustomers).filter(([phone, name]) => 
+        name.toLowerCase().includes(inputVal) || phone.includes(inputVal)
+    );
+
+    if (matched.length === 0) {
+        suggestionBox.classList.add('hidden');
+        return;
+    }
+
+    suggestionBox.classList.remove('hidden');
+    matched.forEach(([phone, name]) => {
+        suggestionBox.innerHTML += `
+            <div onclick="selectSuggestedCustomer('${name}', '${phone}')" class="p-2.5 hover:bg-blue-50 cursor-pointer rounded-lg border-b text-xs flex justify-between items-center">
+                <span class="font-bold text-gray-800">${name}</span>
+                <span class="text-blue-600 font-semibold">${phone}</span>
+            </div>
+        `;
+    });
+}
+
+function selectSuggestedCustomer(name, phone) {
+    document.getElementById('due-name').value = name;
+    document.getElementById('due-phone').value = phone;
+    document.getElementById('customer-suggestions').classList.add('hidden');
 }
 
 // Save Due
