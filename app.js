@@ -36,12 +36,6 @@ window.onload = function() {
     checkAuthAndBlockStatus();
     document.getElementById('due-date').value = getTodayDateStr();
     document.getElementById('paid-date').value = getTodayDateStr();
-
-    // Attach real-time input listener for customer name suggestions
-    const nameInput = document.getElementById('due-name');
-    if (nameInput) {
-        nameInput.addEventListener('input', handleCustomerTypeAhead);
-    }
 }
 
 function checkAuthAndBlockStatus() {
@@ -133,7 +127,7 @@ function getStoreTransKey() {
 }
 
 // ==========================================
-// AUTO-SUGGESTION LOGIC FOR CUSTOMERS
+// ROBUST AUTO-SUGGESTION (Type-Ahead) FOR NEW DUE
 // ==========================================
 function handleCustomerTypeAhead() {
     const inputVal = document.getElementById('due-name').value.trim().toLowerCase();
@@ -148,6 +142,7 @@ function handleCustomerTypeAhead() {
     const key = getStoreTransKey();
     const transactions = JSON.parse(localStorage.getItem(key) || '[]');
     
+    // Gather all unique customers from entire local database storage
     let uniqueCustomers = {};
     transactions.forEach(t => {
         if(t.phone && t.name) {
@@ -166,8 +161,10 @@ function handleCustomerTypeAhead() {
 
     suggestionBox.classList.remove('hidden');
     matched.forEach(([phone, name]) => {
+        // Escape special characters to prevent any syntax issue
+        const safeName = name.replace(/'/g, "\\'");
         suggestionBox.innerHTML += `
-            <div onclick="selectSuggestedCustomer('${name}', '${phone}')" class="p-2.5 hover:bg-blue-50 cursor-pointer rounded-lg border-b text-xs flex justify-between items-center bg-white">
+            <div onclick="selectSuggestedCustomer('${safeName}', '${phone}')" class="p-3 hover:bg-blue-50 cursor-pointer rounded-xl border-b text-xs flex justify-between items-center bg-white transition">
                 <span class="font-bold text-gray-800">${name}</span>
                 <span class="text-blue-600 font-semibold">${phone}</span>
             </div>
