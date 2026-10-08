@@ -1,5 +1,5 @@
 // ==========================================
-// ১. অনুমোদিত দোকানদারদের তালিকা (এখানে ৫টি স্যাম্পল ইউজার-পাস দেওয়া আছে)
+// ১. অনুমোদিত দোকানদারদের তালিকা (৫টি স্যাম্পল ইউজার)
 // ==========================================
 const ALLOWED_SHOPS = {
     "01711111111": { shopName: "ভাই ভাই স্টোর", password: "123" },
@@ -10,15 +10,15 @@ const ALLOWED_SHOPS = {
 };
 
 // ==========================================
-// ২. বিল বাকি থাকা বা ব্লক করা দোকানদারদের তালিকা (এখানে ৫টি স্যাম্পল ব্লক নম্বর দেওয়া আছে)
-// বিল পরিশোধ করলে এখান থেকে নম্বর মুছে দেবেন, না দিলে ব্লক থাকবে।
+// ২. ব্লক করা দোকানদারদের তালিকা (৫টি স্যাম্পল ব্লক নম্বর)
+// এই লিস্টে নম্বর থাকা মানেই অ্যাপ সাথে সাথে ব্লক বা সাসপেন্ড হয়ে যাওয়া।
 // ==========================================
 const BLOCKED_NUMBERS = [
-    "01711111111", // স্যাম্পল ব্লক ১
-    "01800000000", // স্যাম্পল ব্লক ২
-    "01800000001", // স্যাম্পল ব্লক ৩
-    "01800000002", // স্যাম্পল ব্লক ৪
-    "01800000003"  // স্যাম্পল ব্লক ৫
+    "01800000001",
+    "01800000002",
+    "01800000003",
+    "01800000004",
+    "01800000005"
 ];
 
 let selectedCustomerForPaid = null;
@@ -39,15 +39,21 @@ window.onload = function() {
     document.getElementById('paid-date').value = getTodayDateStr();
 }
 
+// ==========================================
+// ইনস্ট্যান্ট ব্লক ও অথেন্টিকেশন চেক লজিক
+// ==========================================
 function checkAuthAndBlockStatus() {
     const savedUser = localStorage.getItem('sohel_digital_hisab_user');
     if (savedUser) {
         const user = JSON.parse(savedUser);
         currentLoggedInPhone = user.phone;
         
+        // যদি নম্বরটি ব্লক লিস্টে থাকে অথবা অনুমোদিত তালিকায় না থাকে
         if (BLOCKED_NUMBERS.includes(user.phone) || !ALLOWED_SHOPS[user.phone]) {
             document.getElementById('server-offline-screen').classList.remove('hidden');
-            localStorage.removeItem('sohel_digital_hisab_user');
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('auth-screen').classList.add('hidden');
+            localStorage.removeItem('sohel_digital_hisab_user'); // সেশন ক্লিয়ার করে দেব
             return;
         }
 
@@ -55,6 +61,7 @@ function checkAuthAndBlockStatus() {
         document.getElementById('display-phone').innerText = "হিসাব আইডি: " + user.phone;
 
         document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('server-offline-screen').classList.add('hidden');
         document.getElementById('dashboard-screen').classList.remove('hidden');
         
         document.getElementById('filter-date').value = getTodayDateStr();
@@ -76,8 +83,10 @@ function handleLogin() {
         return;
     }
 
+    // লগইন করার সময়ও ব্লক লিস্ট চেক করবে
     if (BLOCKED_NUMBERS.includes(phone)) {
         document.getElementById('server-offline-screen').classList.remove('hidden');
+        document.getElementById('auth-screen').classList.add('hidden');
         return;
     }
 
@@ -101,7 +110,6 @@ function openAddDueModal() {
     document.getElementById('due-phone').value = '';
     document.getElementById('due-amount').value = '';
     document.getElementById('due-date').value = getTodayDateStr();
-
     document.getElementById('modal-due').classList.remove('hidden');
 }
 
