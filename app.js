@@ -1,5 +1,5 @@
 // ==========================================
-// ১. অনুমোদিত দোকানদারদের তালিকা (৫টি স্যাম্পল ইউজার-পাস)
+// ১. অনুমোদিত দোকানদারদের তালিকা (৫টি স্যাম্পল ইউজার)
 // ==========================================
 const ALLOWED_SHOPS = {
     "01711111111": { shopName: "ভাই ভাই স্টোর", password: "123" },
@@ -10,7 +10,7 @@ const ALLOWED_SHOPS = {
 };
 
 // ==========================================
-// ২. ব্লক করা বা সাবস্ক্রিপশন শেষ হওয়া দোকানদারদের তালিকা (৫টি স্যাম্পল ব্লক নম্বর)
+// ২. ব্লক করা দোকানদারদের তালিকা (৫টি স্যাম্পল ব্লক নম্বর)
 // ==========================================
 const BLOCKED_NUMBERS = [
     "01800000001",
@@ -126,7 +126,9 @@ function getStoreTransKey() {
     return 'sohel_trans_' + currentLoggedInPhone;
 }
 
-// Auto-suggest Customer name & phone (Unique by Phone Number to handle duplicate names)
+// ==========================================
+// AUTO-SUGGESTION (Type-Ahead) FOR NEW DUE
+// ==========================================
 function handleCustomerTypeAhead() {
     const inputVal = document.getElementById('due-name').value.trim().toLowerCase();
     const suggestionBox = document.getElementById('customer-suggestions');
@@ -140,6 +142,7 @@ function handleCustomerTypeAhead() {
     const key = getStoreTransKey();
     const transactions = JSON.parse(localStorage.getItem(key) || '[]');
     
+    // Unique customers map by phone number to prevent duplicate name clashes
     let uniqueCustomers = {};
     transactions.forEach(t => {
         if(t.phone && t.name) {
